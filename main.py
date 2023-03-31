@@ -32,11 +32,13 @@ hashtags = "#meme #funny #dankmemes \
             #funnypictures #funnypics"
 
 #live timer
-def timer(sec:int, text:str="Timer"):
+def timer():
+	sec = 1800
 	while sec >= 0:
-		print(f"{text}: {sec}", end='\r')
+		print(f"Next Upload In: {sec} seconds", end='\r')
 		sec = sec - 1
 		sleep(1)
+	print()
 
 #reddit interaction
 def reddit(func:str, sub):
@@ -77,7 +79,6 @@ def clear_tmp(type):
 		elif type == 'all':
 			remove(file)
 
-####Start Program####
 
 #load settings and login 
 try:
@@ -101,7 +102,7 @@ while True:
 	except:
 		print("Meme Upload Failed")
 	clear_tmp('img')
-	timer(sec=1800, text="Next Upload In")
+	timer()
 
 	try:
 		insta.photo_upload(resize(reddit("image", dankmemes)), caption=f"{reddit('title', dankmemes)} \n \n \
@@ -112,4 +113,4 @@ while True:
 		print("Dankmeme Upload Failed")
 		
 	clear_tmp('img')
-	timer(sec=1800, text="Next Upload In")
+	timer()
