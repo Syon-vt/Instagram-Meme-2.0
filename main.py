@@ -78,6 +78,7 @@ def clear_tmp(type):
 		elif type == 'all':
 			remove(file)
 
+####Start Program####
 
 #load settings and login 
 try:

@@ -8,8 +8,8 @@ config = ConfigParser()
 insta = Client()
 
 #create files
-mkdir('folder')
-open('folder/file.json', 'w').close()
+mkdir('tmp')
+open('tmp/dump.json', 'w').close()
 
 #login and dump settings
 config.read('config.ini')
