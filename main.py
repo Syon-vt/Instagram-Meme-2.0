@@ -1,7 +1,7 @@
 #imports
 from praw import Reddit
 from requests import get
-from time import sleep, time
+from time import sleep
 from instagrapi import Client
 from PIL import Image
 from os import remove, listdir
@@ -33,8 +33,7 @@ hashtags = "#meme #funny #dankmemes \
 
 #live timer
 def timer(sec:int, text:str="Timer"):
-	start = time()
-	while time()-start >= 0:
+	while sec >= 0:
 		print(f"{text}: {sec}", end='\r')
 		sec = sec - 1
 		sleep(1)
