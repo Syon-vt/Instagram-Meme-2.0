@@ -1,4 +1,4 @@
-#imports
+#[Imports]#
 from praw import Reddit
 from requests import get
 from time import sleep, strftime
@@ -7,7 +7,8 @@ from PIL import Image
 from os import remove, listdir
 from configparser import ConfigParser
 
-#read ini file
+#[Initialize]#
+#read ini files
 cred = ConfigParser()
 cred.read('config.ini')
 
@@ -31,6 +32,7 @@ hashtags = "#meme #funny #dankmemes \
             #funnymemes #funnymeme #funnyposts \
             #funnypictures #funnypics"
 
+#[Funtions]#
 #live timer
 def timer():
 	sec = 1800
@@ -42,27 +44,22 @@ def timer():
 
 #get current date and time
 def current_time():
-	return strftime(r'%A, %d %B %Y, %I:%M:%S')
+	return strftime(r'%A, %d %B %Y, %I:%M %p')
 
 #reddit interaction
-def reddit(func:str, sub):
+def reddit(sub):
+
+	global title
+	global author
+
 	for post in sub.top(time_filter="hour", limit=1):
 
-		if func == "title":
-			return post.title
-		
-		elif func == "author":
-			return post.author
-		
-		elif func == "image":
-			with open(f"tmp/meme.jpg", "wb") as img:
-				img.write(get(post.url).content)
-
-		elif func == None:
-			print("Enter a function!")
-
-		else:
-			print("Invalid Input")
+		title =  post.title
+	
+		author =  post.author
+	
+		with open(f"tmp/meme.jpg", "wb") as img:
+			img.write(get(post.url).content)
 
 #resize image to 1080x1080
 def resize(path):
@@ -70,19 +67,19 @@ def resize(path):
 	img.convert('RGB').resize([1080, 1080]).save('tmp/resize.jpg')
 
 #clear tmp file
-def clear_tmp(type):
+def clear_tmp():
 	for file in listdir('tmp'):
-
-		if type == "img":
 
 			if file.endswith('.jpg') or file.endswith('.jpeg'):
 				remove(f"tmp/{file}")
 
-		elif type == 'all':
-			remove(file)
+#upload meme
+def upload():
+		insta.photo_upload("tmp/resize.jpg", caption=f"{title} \n \n \
+		 via Reddit: {author} \n \n {hashtags}")
+		
 
-
-#load settings and login 
+#[Program Start]#
 try:
 	insta.load_settings('tmp/dump.json')
 	print("Settings Loaded")
@@ -93,34 +90,31 @@ try:
 	insta.login(user,passwd)
 	print("Logged In")
 except:
-	print("Failed to Log In")
-	quit()
+	input("Failed to Log In")
+	
 
 #main loop
 while True:
 	try:
-		reddit("image", memes)
+		reddit(memes)
 		resize("tmp/meme.jpg")
-		insta.photo_upload("tmp/resize.jpg", caption=f"{reddit('title', memes)} \n \n \
-		 via Reddit: {reddit('author', memes)} \n \n {hashtags}")
+		upload()
 		num = num+1
 		print(f"{num}. Meme Uploaded on {current_time()}")
-		
 	except:
-		print(f"Meme Upload Failed on {current_time()}")
-	clear_tmp('img')
+		input(f"Meme Upload Failed on {current_time()}")
+
 	timer()
 
 	try:
-		reddit("image", dankmemes)
+		reddit(dankmemes)
 		resize("tmp/meme.jpg")
-		insta.photo_upload("tmp/resize.jpg", caption=f"{reddit('title', dankmemes)} \n \n \
-		     via Reddit: {reddit('author', dankmemes)} \n \n {hashtags}")
+		upload()
 		num = num+1
-		print(f"{num}. Dankmeme Uploaded on {current_time()}")
-		
+		print(f"{num}. Dankmeme Uploaded on {current_time()}\n")
 	except:
-		print(f"Dankmeme Upload Failed on {current_time()}")
-		
-	clear_tmp('img')
+		input(f"Dankmeme Upload Failed on {current_time()}")
+		quit()
+
+	clear_tmp()
 	timer()
