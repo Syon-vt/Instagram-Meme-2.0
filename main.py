@@ -6,6 +6,7 @@ from instagrapi import Client
 from PIL import Image
 from os import remove, listdir
 from configparser import ConfigParser
+from urllib.request import urlopen
 
 #[Initialize]#
 #read ini files
@@ -26,11 +27,11 @@ memes = read.subreddit("memes")
 dankmemes = read.subreddit("dankmemes")
 num = 0
 hashtags = "#meme #funny #dankmemes \
-            #reddit #memepage #memesdaily \
-            #memeshourly #redditmeme #redditmemes \
-            #redditmemesdaily #redditrepost #redditfunny \
-            #funnymemes #funnymeme #funnyposts \
-            #funnypictures #funnypics"
+			#reddit #memepage #memesdaily \
+			#memeshourly #redditmeme #redditmemes \
+			#redditmemesdaily #redditrepost #redditfunny \
+			#funnymemes #funnymeme #funnyposts \
+			#funnypictures #funnypics"
 
 #[Funtions]#
 #live timer
@@ -66,20 +67,36 @@ def resize(path):
 	img = Image.open(path)
 	img.convert('RGB').resize([1080, 1080]).save('tmp/resize.jpg')
 
-#clear tmp file
+#clear tmp folder
 def clear_tmp():
 	for file in listdir('tmp'):
 
 			if file.endswith('.jpg') or file.endswith('.jpeg'):
 				remove(f"tmp/{file}")
 
+#check if wifi is connected
+def wifi():
+	try:
+		urlopen("https://google.com")
+		return True
+	except:
+		print(f"Wifi is not connected!{current_time()}")
+		return False
+	
 #upload meme
 def upload():
+		while wifi()==False:
+			sleep(600)
+			wifi()
 		insta.photo_upload("tmp/resize.jpg", caption=f"{title} \n \n \
 		 via Reddit: {author} \n \n {hashtags}")
-		
+
 
 #[Program Start]#
+while wifi()==False:
+	sleep(600)
+	wifi()
+
 try:
 	insta.load_settings('tmp/dump.json')
 	print("Settings Loaded")
@@ -100,7 +117,7 @@ while True:
 		resize("tmp/meme.jpg")
 		upload()
 		num = num+1
-		print(f"{num}. Meme Uploaded on {current_time()}")
+		print(f"{num}. Meme Uploaded on {current_time()}\n")
 	except:
 		input(f"Meme Upload Failed on {current_time()}")
 
